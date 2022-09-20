@@ -1,5 +1,7 @@
 var express = require("express");
 var router = express.Router();
+var moment = require("moment"); // require
+let now = moment();
 
 require("../models/connection");
 
@@ -9,14 +11,17 @@ const fetch = require("node-fetch");
 
 // GET home page.
 router.get("/", function (req, res) {
+  // const dateStr = "2022-09-20";
+  // const dateNew = new Date(dateStr);
+  // const iso = dateNew.toISOString();
   // chercher dans la base de donnees si le trip existe et retourne un message d'erreur dans le cas contraire
-  Trip.findOne({
+  Trip.find({
     departure: { $regex: new RegExp(req.body.departure, "i") },
     arrival: { $regex: new RegExp(req.body.arrival, "i") },
-    date: req.body.date,
+    // date: iso,
   }).then((trip) => {
-    if (trip) {
-      res.json({ result: true, trip: trip });
+    if (trip && trip.length) {
+      res.json({ result: true, voyages: trip });
     } else {
       res.json({ result: false, error: "Trip not found" });
     }
@@ -24,7 +29,7 @@ router.get("/", function (req, res) {
 });
 
 // DELETE elements in my cart
-router.delete("/:trip", (req, res) => {
+/* router.delete("/:trip", (req, res) => {
   Trip.deleteOne({
     departure: { $regex: new RegExp(req.body.departure, "i") },
     arrival: req.body.arrival,
@@ -37,6 +42,6 @@ router.delete("/:trip", (req, res) => {
       res.json({ result: false, error: "Trip not found" });
     }
   });
-});
+}); */
 
 module.exports = router;

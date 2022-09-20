@@ -7,6 +7,8 @@ var indexRouter = require("./routes/index");
 
 var app = express();
 const cors = require("cors");
+var moment = require("moment"); // require
+moment().format();
 app.use(cors());
 app.use(logger("dev"));
 app.use(express.json());
