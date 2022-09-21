@@ -10,15 +10,18 @@ const Trip = require("../models/trips");
 const fetch = require("node-fetch");
 
 // GET home page.
-router.get("/", function (req, res) {
-  let date = new Date();
+router.post("/", function (req, res) {
+  let fromHour = new Date().setHours(00, 01, 00);
+  let toHour = new Date().setHours(23, 59, 59);
+  // console.log(new Date(fromHour).toISOString());
+  // console.log(new Date(toHour).toISOString());
   // chercher dans la base de donnees si le trip existe et retourne un message d'erreur dans le cas contraire
   Trip.find({
     departure: { $regex: new RegExp(req.body.departure, "i") },
     arrival: { $regex: new RegExp(req.body.arrival, "i") },
     date: {
-      $gte: date.setHours(02, 00, 00),
-      $lt: date.setHours(23, 59, 59),
+      $gte: new Date(fromHour).toISOString(),
+      $lt: new Date(toHour).toISOString(),
     },
   }).then((trip) => {
     if (trip && trip.length) {
