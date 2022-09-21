@@ -11,13 +11,14 @@ const fetch = require("node-fetch");
 
 // GET home page.
 router.get("/", function (req, res) {
+  let date = new Date();
   // chercher dans la base de donnees si le trip existe et retourne un message d'erreur dans le cas contraire
   Trip.find({
     departure: { $regex: new RegExp(req.body.departure, "i") },
     arrival: { $regex: new RegExp(req.body.arrival, "i") },
     date: {
-      $gte: new Date(req.body.date).setHours(00, 00, 1),
-      $lt: new Date(req.body.date).setHours(23, 59, 59),
+      $gte: date.setHours(02, 00, 00),
+      $lt: date.setHours(23, 59, 59),
     },
   }).then((trip) => {
     if (trip && trip.length) {
