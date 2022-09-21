@@ -11,14 +11,14 @@ const fetch = require("node-fetch");
 
 // GET home page.
 router.get("/", function (req, res) {
-  // const dateStr = "2022-09-20";
-  // const dateNew = new Date(dateStr);
-  // const iso = dateNew.toISOString();
   // chercher dans la base de donnees si le trip existe et retourne un message d'erreur dans le cas contraire
   Trip.find({
     departure: { $regex: new RegExp(req.body.departure, "i") },
     arrival: { $regex: new RegExp(req.body.arrival, "i") },
-    // date: iso,
+    date: {
+      $gte: new Date(req.body.date).setHours(00, 00, 1),
+      $lt: new Date(req.body.date).setHours(23, 59, 59),
+    },
   }).then((trip) => {
     if (trip && trip.length) {
       res.json({ result: true, voyages: trip });
