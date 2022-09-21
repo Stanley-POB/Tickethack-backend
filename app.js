@@ -4,8 +4,7 @@ var cookieParser = require("cookie-parser");
 var logger = require("morgan");
 
 var indexRouter = require("./routes/index");
-// var cartRouter = require("./routes/cart");
-// var bookingRouter = require("./routes/booking");
+var cartRouter = require("./routes/cart");
 
 var app = express();
 const cors = require("cors");
@@ -19,7 +18,6 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, "public")));
 
 app.use("/", indexRouter);
-// app.use("/cart", cartRouter);
-// app.use("/booking", bookingRouter);
+app.use("/cart", cartRouter);
 
 module.exports = app;

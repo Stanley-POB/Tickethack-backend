@@ -1,33 +1,45 @@
 var express = require("express");
 var router = express.Router();
-var moment = require("moment"); // require
-let now = moment();
 
 require("../models/connection");
 
 // importation du modele Trips pour pouvoir l'utiliser dans les routes
-const cart = require("./models/carts");
 const fetch = require("node-fetch");
+const Cart = require("./models/carts");
+const Trip = require("../models/trips");
 
-router.post("/mycart", function (req, res) {
-  let fromHour = new Date("2022-09-23").setHours(00, 01, 00);
-  let toHour = new Date("2022-09-23").setHours(23, 59, 59);
-  // console.log(new Date(fromHour).toISOString());
-  // console.log(new Date(toHour).toISOString());
-  // chercher dans la base de donnees si le trip existe et retourne un message d'erreur dans le cas contraire
-  // if (req.body.arrival === "")
-  Trip.find({
-    departure: { $regex: new RegExp(req.body.departure, "i") },
-    arrival: { $regex: new RegExp(req.body.arrival, "i") },
-    date: {
-      $gte: fromHour,
-      $lte: toHour,
-    },
-  }).then((trip) => {
-    if (trip && trip.length) {
-      res.json({ result: true, voyages: trip });
+// cherche tous les trips dans la collection carts
+router.get("/", (req, res) => {
+  Cart.find().then((data) => {
+    res.json({ voyages: data });
+  });
+});
+
+router.post("/mycart", (req, res) => {
+  // Check if trip has already been added
+  Cart.find().then((data) => {
+    if (data) {
+      res.json({ result: true, weather: data });
     } else {
-      res.json({ result: false, error: "Trip not found" });
+      res.json({ result: false, error: "City not found" });
+    }
+  });
+
+  Cart.findbyID({ id: req.body.id }).then((dbData) => {
+    if (dbData) {
+      // Creates new document with trips data based on foreign key
+      const newCart = new Cart({
+        trip: req.body.trip,
+        isPaid: req.body.isPaid,
+      });
+
+      // Finally save in database
+      newCart.save().then((newDoc) => {
+        res.json({ result: true, cart: newDoc });
+      });
+    } else {
+      // Trip already exists in database
+      res.json({ result: false, error: "City already saved" });
     }
   });
 });
